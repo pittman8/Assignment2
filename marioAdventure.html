@@ -1,0 +1,113 @@
+<!doctype html>
+<head>
+<title>Mario Adventure!</title>
+</head>
+
+<style>
+    @font-face 
+    {
+        font-family: marioBrothers;
+        src: url("./SuperMario256.ttf");
+    }
+    
+    *
+    {
+        font-family: marioBrothers;
+    }
+    
+    #startScreen
+    {
+        width: 750px;
+        height: 950px;
+        background-color: dodgerblue;
+        border: 1px dashed black;
+        position: absolute;
+        z-index: 1;
+        display: block;
+    }
+    
+    #game
+    {
+        width: 750px;
+        height: 950px;
+        background-color: dodgerblue;
+        border: 1px dashed black;
+        z-index: 2;
+    }
+
+    #stage 
+    {
+        position: relative;
+        width: 600px;
+        height: 600px;
+        background-image: url("./images/background.jpg");
+        border: 1px dashed black;
+        margin: 40px;
+    }
+
+    .cell
+    {
+        display: block;
+        position: absolute;
+        width: 75px;
+        height: 75px;
+        border: 1px dashed black;
+    }
+
+    p
+    {
+        width: 600px;
+        font-size: 20px;
+        padding: 10px;
+    }
+    
+    h1
+    {
+        text-align: center;
+        font-size: 50px;
+        color: #f04545;
+        text-shadow: 1px 0 black, 0 1px black, 1px 0 black, 0 1px black;
+    }
+    
+    h2
+    {
+        text-align: center;
+        font-size: 30px;
+        color: #f04545;
+        text-shadow: 1px 0 black, 0 1px black, 1px 0 black, 0 1px black;
+    }
+    
+    #start
+    {
+        padding: 10px 10px;
+        font-size: 20px;
+        margin-left: 320px;
+        background-color: #f04545;
+        border: solid black;
+        cursor: pointer;
+    }
+
+</style>
+
+<div id ="startScreen">
+    <br /><br /><br /><br /><br /><br />
+    <h1>Mario must save Princess Peach from Bowser! <br /></h1> 
+    <p style = "text-align: center; margin-left: 70px">
+        Use the arrow keys to move across the board to reach the princess. <br /> <br />
+        Don't waste time! You lose lives as you travel across the board. <br /> <br />
+        Mushrooms are worth 5 lives each. <br/ >
+        Coin spots are worth 5 coins each.</p>
+    <h2>Click start to begin</h2>
+    <button id = "start" onclick = "hide()">Start</button>
+    <br />
+    <p style = "text-align: center; margin-top: 100px; margin-left: 60px; font-size: 15px">
+        Copyright © 2018 Nintendo® All Rights Reserved</p>
+</div>
+
+<section id="game">
+  <h1>Super Mario Adventure!</h1>
+  <div id="stage"></div>
+  <p id="output"></p> 
+</section>
+
+<script src = "./marioAdventure.js"></script>

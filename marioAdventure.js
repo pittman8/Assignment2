@@ -156,11 +156,7 @@ function keydownHandler(event)
     
     // Find out which cell Mario is on
     switch(map.mapSpots[marioLocation.marioRow][marioLocation.marioColumn])
-    {
-        case map.blank:
-            gameMessage = "You run to save Princess Peach!"
-            break;
-            
+    {            
         case map.coin:
             var coin = document.getElementById("coin");
             coin.play();
@@ -169,7 +165,7 @@ function keydownHandler(event)
         case map.mushroom:
             var life = document.getElementById("1Up");
             life.play();
-            break;
+            break; 
             
         case map.peach:
             var youWin = document.getElementById("youWin");
@@ -178,8 +174,6 @@ function keydownHandler(event)
             // Show end screen when Mario has reached Peach
             var end = document.getElementById("endScreen");
             end.style.display = "block";
-            var goAway = document.getElementById("stage")
-            goAway.style.display = "none";
             break;
             
         case map.fly_trap:
@@ -257,6 +251,10 @@ function render()
     {
         case gameObjects.mario:
         cell.src = "./images/mario.png";
+        break;
+        
+        case gameObjects.bowser:
+        cell.src = "./images/bowser.png";
         break;
     }
   

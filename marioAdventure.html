@@ -26,6 +26,18 @@
         display: block;
     }
     
+    #endScreen
+    {
+        width: 750px;
+        height: 950px;
+        background-color: dodgerblue;
+        border: 1px dashed black;
+        position: absolute;
+        z-index: 1;
+        display: none;
+    }
+    
+    
     #game
     {
         width: 750px;
@@ -86,6 +98,14 @@
         border: solid black;
         cursor: pointer;
     }
+    
+    #marioAndPeach 
+    {
+        width: 225px;
+        height: 226px;
+        background-image: url('./images/mario_and_peach.png');
+        margin-left: 270px;
+    }
 
 </style>
 
@@ -105,9 +125,46 @@
 </div>
 
 <section id="game">
-  <h1>Super Mario Adventure!</h1>
-  <div id="stage"></div>
-  <p id="output"></p> 
+    <div id ="endScreen">
+        <br /><br /><br /><br /><br /><br />
+        <h1>Congratulations! You Saved the Princess! </h1>
+        <h2>You Win!!</h2>
+        <div id= "marioAndPeach"></div>
+        <p style="text-align: center; margin-left: 65px">Thanks for playing.</p>
+    </div>
+    <h1>Super Mario Adventure!</h1>
+    <div id="stage"></div>
+    <p id="output"></p> 
 </section>
+
+<audio id = "hereWeGo">
+    <source src="./audio/here_we_go.mp3" type="audio/mp3">
+    <source src="./audio/here_we_go.ogg" type="audio/ogg">
+</audio>
+<audio id = "coin">
+    <source src="./audio/coin.mp3" type="audio/mp3">
+    <source src="./audio/coin.ogg" type="audio/ogg">
+</audio>
+<audio id = "1Up">
+    <source src="./audio/1_up.mp3" type="audio/mp3">
+    <source src="./audio/1_up.ogg" type="audio/ogg">
+</audio>
+<audio id = "goomba">
+    <source src="./audio/goomba.mp3" type="audio/mp3">
+    <source src="./audio/goomba.ogg" type="audio/ogg">
+</audio>
+<audio id = "vine">
+    <source src="./audio/vine.mp3" type="audio/mp3">
+    <source src="./audio/vine.ogg" type="audio/ogg">
+</audio>
+<audio id = "gameOver">
+    <source src="./audio/game_over.mp3" type="audio/mp3">
+    <source src="./audio/game_over.ogg" type="audio/ogg">
+</audio>
+<audio id = "youWin">
+    <source src="./audio/you_win.mp3" type="audio/mp3">
+    <source src="./audio/you_win.ogg" type="audio/ogg">
+</audio>
+
 
 <script src = "./marioAdventure.js"></script>

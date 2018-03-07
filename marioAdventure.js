@@ -2,13 +2,18 @@
 function hide() {
     var display = document.getElementById("startScreen");
     display.style.display = "none";
+    var hereWeGo = document.getElementById("hereWeGo");
+    hereWeGo.play();
 }
-
-//Reference to the stage and output
+ 
+// Reference to the stage and output
 var stage = document.querySelector("#stage");
 var output = document.querySelector("#output");
 
-// The game map
+// Add a keyboard listener
+window.addEventListener("keydown", keydownHandler, false);
+
+// The game map of immobile objects
 // Uses "const" keyword to make the object literal a constant variable,
 // the map of the objects that do not move does not change (Ecmascript 6)
 const map = {
@@ -37,7 +42,7 @@ const map = {
 };
     
 
-// The game objects map
+// The game map of mobile objects
 // Uses "let" keyword to allow the object literal to change
 // due to Mario and Bowser moving around the board (Ecmascript 6)
 let gameObjects = {
@@ -76,12 +81,126 @@ var gameVariables = {
     }
 };
 
+// Directions to go in the game
+var direction = {
+    up : 38,
+    down : 40,
+    right : 39,
+    left : 37
+}
+
+// Mario's location, not initialized to anything
+var marioLocation = {};
+
+// Loop to figure out where Mario is in gameObjects array
+for(var row = 0; row < gameObjects.rows; row++)
+{
+    for(var column = 0; column < gameObjects.columns; column++)
+    {
+        if(gameObjects.objectSpots[row][column] === gameObjects.mario)
+        {
+            marioLocation.marioRow = row;
+            marioLocation.marioColumn = column;
+        }
+    }
+}
+
 render();
+
+function keydownHandler(event)
+{
+    switch(event.keyCode)
+    {
+        case direction.up:
+            
+            // Find out if Mario's move will be within the playing field
+            if (marioLocation.marioRow > 0)
+            {
+                // If it is, clear Mario's current cell
+                gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] = 0;
+                
+                // Subtract 1 from Mario's row to move it up one row
+                marioLocation.marioRow--;
+                
+                // Apply Mario's new position to the array
+                gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] = gameObjects.mario;
+            }
+            break; 
+            
+        case direction.down:
+            if(marioLocation.marioRow < map.rows - 1)
+            {
+                gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] = 0;
+                marioLocation.marioRow++;
+                gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] = gameObjects.mario;
+            }
+            break;
+        case direction.left:
+            if(marioLocation.marioColumn > 0)
+            {
+                gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] = 0;
+                marioLocation.marioColumn--;
+                gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] = gameObjects.mario;
+            }
+            break;  
+	    
+        case direction.right:
+            if(marioLocation.marioColumn < map.columns - 1)
+            {
+                gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] = 0;
+                marioLocation.marioColumn++;
+                gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] = gameObjects.mario;
+            }
+            break; 
+    }
+    
+    // Find out which cell Mario is on
+    switch(map.mapSpots[marioLocation.marioRow][marioLocation.marioColumn])
+    {
+        case map.blank:
+            gameMessage = "You run to save Princess Peach!"
+            break;
+            
+        case map.coin:
+            var coin = document.getElementById("coin");
+            coin.play();
+            break;
+            
+        case map.mushroom:
+            var life = document.getElementById("1Up");
+            life.play();
+            break;
+            
+        case map.peach:
+            var youWin = document.getElementById("youWin");
+            youWin.play();
+            
+            // Show end screen when Mario has reached Peach
+            var end = document.getElementById("endScreen");
+            end.style.display = "block";
+            var goAway = document.getElementById("stage")
+            goAway.style.display = "none";
+            break;
+            
+        case map.fly_trap:
+            var vine = document.getElementById("vine");
+            vine.play();
+            break;
+            
+        case map.goomba:
+            var goomba = document.getElementById("goomba");
+            goomba.play();
+            break;
+    }
+
+// Render the game    
+ render();   
+}
     
 function render()
 {
-  //Clear the stage of img tag cells
-  //from the previous turn
+  // Clear the stage of img tag cells
+  // from the previous turn
   
   if(stage.hasChildNodes())
   {
@@ -91,21 +210,21 @@ function render()
     }
   }
   
-  //Render the game by looping through the map arrays
+  // Render the game by looping through the map arrays
   for(var row = 0; row < map.rows; row++) 
   {	
     for(var column = 0; column < map.columns; column++) 
     { 
-      //Create a img tag called cell
+      // Create a img tag called cell
       var cell = document.createElement("img");
 
-      //Set it's CSS class to "cell"
+      // Set it's CSS class to "cell"
       cell.setAttribute("class", "cell");
 
-      //Add the img tag to the <div id="stage"> tag
+      // Add the img tag to the <div id="stage"> tag
       stage.appendChild(cell);
 
-      //Find the correct image for this map cell
+      // Find the correct image for this map cell
       switch(map.mapSpots[row][column])
       {
         case map.blank:
@@ -133,24 +252,20 @@ function render()
           break;
       }
         
-    //Add the ship and monster from the gameObjects array
+    // Add Mario and Bowser from the gameObjects array
     switch(gameObjects.objectSpots[row][column])
     {
         case gameObjects.mario:
         cell.src = "./images/mario.png";
         break;
-
-        case gameObjects.bowser:
-        cell.src = "./images/bowser.png";
-        break;
     }
   
-    //Position the cell 
+    // Position the cell 
     cell.style.top = row * cellSize.size + "px";
     cell.style.left = column * cellSize.size + "px";
     }
 
-    //Display the game message
+    // Display the game message
 	output.innerHTML = gameVariables.gameMessage;
   }
 }

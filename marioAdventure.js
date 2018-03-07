@@ -72,13 +72,10 @@ var cellSize = {
 }
 
 // Game variables
-// Uses template strings to perform string substitution (Ecmascript 6)
 var gameVariables = {
     lives : 15,
     coins : 10,
-    get gameMessage() {
-        return `Lives left: ${this.lives}` + `<br /> Coins: ${this.coins}`;
-    }
+    gameMessage : "Use the arrow keys to move around the board"
 };
 
 // Directions to go in the game
@@ -157,16 +154,26 @@ function keydownHandler(event)
     // Find out which cell Mario is on
     switch(map.mapSpots[marioLocation.marioRow][marioLocation.marioColumn])
     {            
+        case map.blank:
+            gameVariables.gameMessage = `You run to save the princess!`;
+            break;
+            
         case map.coin:
-            var coin = document.getElementById("coin");
-            coin.play();
+            getCoin();
             break;
             
         case map.mushroom:
-            var life = document.getElementById("1Up");
-            life.play();
+            getLife();
             break; 
             
+        case map.fly_trap:
+            fightPiranha();
+            break;
+            
+        case map.goomba:
+            fightGoomba();
+            break;
+        
         case map.peach:
             var youWin = document.getElementById("youWin");
             youWin.play();
@@ -175,20 +182,71 @@ function keydownHandler(event)
             var end = document.getElementById("endScreen");
             end.style.display = "block";
             break;
-            
-        case map.fly_trap:
-            var vine = document.getElementById("vine");
-            vine.play();
-            break;
-            
-        case map.goomba:
-            var goomba = document.getElementById("goomba");
-            goomba.play();
-            break;
+    }
+    
+    // Subtract a life each turn
+    gameVariables.lives--;
+    
+    // Find out if Mario has run out of lives or coins
+    if (gameVariables.coins <= 0 || gameVariables.lives <= 0)
+    {
+        endGame();
     }
 
-// Render the game    
- render();   
+    // Render the game    
+    render();   
+}
+
+// What happens when Mario encounters a coin cell
+function getCoin()
+{
+    // Coin sound
+    var coin = document.getElementById("coin");
+    coin.play();
+    
+    // Coin variable increases
+    gameVariables.coins += 5;
+    
+    // Update the game message 
+    gameVariables.gameMessage = "This giant coin is filled with 5 small coins!" +
+        "<br> You now have " + gameVariables.coins + " coins.";
+}
+
+// What happens when Mario encounters a mushroom cell
+function getLife()
+{
+    // 1-Up Sound
+    var life = document.getElementById("1Up");
+    life.play();
+    
+    // Lives increase
+    gameVariables.lives += 5;
+    
+    // Update gameMessage
+    gameVariables.gameMessage = "You found a giant 1-Up mushroom" +
+        "<br> You now have " + (gameVariables.lives - 1) + " lives.";
+}
+
+// What happens when Mario encounters a piranha plant cell
+function fightPiranha()
+{
+    // Piranha Plant sound
+    var vine = document.getElementById("vine");
+    vine.play();
+}
+
+// What happens when Mario encounters a goomba cell
+function fightGoomba()
+{
+    // Goomba attack sound
+    var goomba = document.getElementById("goomba");
+    goomba.play();
+}
+
+// What happens when Mario dies
+function endGame()
+{
+    
 }
     
 function render()
@@ -265,5 +323,10 @@ function render()
 
     // Display the game message
 	output.innerHTML = gameVariables.gameMessage;
+      
+    // Display the player's coins and lives
+    // Uses template strings to perform string substitution (Ecmascript 6)
+    output.innerHTML
+      +=  `<br><br>Lives left: ${gameVariables.lives}` + `<br />Coins: ${gameVariables.coins}`;
   }
 }

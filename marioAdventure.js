@@ -207,6 +207,9 @@ function getCoin()
     // Coin variable increases
     gameVariables.coins += 5;
     
+    // Coin disappears (set to a blank cell)
+    map.mapSpots[marioLocation.marioRow][marioLocation.marioColumn] = 0;
+    
     // Update the game message 
     gameVariables.gameMessage = "This giant coin is filled with 5 small coins!" +
         "<br> You now have " + gameVariables.coins + " coins.";
@@ -221,6 +224,9 @@ function getLife()
     
     // Lives increase
     gameVariables.lives += 5;
+    
+    // Mushroom disappears (set to a blank cell)
+    map.mapSpots[marioLocation.marioRow][marioLocation.marioColumn] = 0;
     
     // Update gameMessage
     gameVariables.gameMessage = "You found a giant 1-Up mushroom" +

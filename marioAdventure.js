@@ -75,7 +75,11 @@ var cellSize = {
 var gameVariables = {
     lives : 15,
     coins : 10,
-    gameMessage : "Use the arrow keys to move around the board"
+    gameMessage : "Use the arrow keys to move around the board",
+    // Calculate Mario's strength based on his lives and coins
+    get marioStrength () { 
+        return Math.ceil((this.lives + this.coins) / 2);
+    }
 };
 
 // Directions to go in the game
@@ -175,12 +179,7 @@ function keydownHandler(event)
             break;
         
         case map.peach:
-            var youWin = document.getElementById("youWin");
-            youWin.play();
-            
-            // Show end screen when Mario has reached Peach
-            var end = document.getElementById("endScreen");
-            end.style.display = "block";
+            endGame();
             break;
     }
     
@@ -234,25 +233,129 @@ function getLife()
 }
 
 // What happens when Mario encounters a piranha plant cell
+// There is a bigger incentive to fight a piranha plant because Mario gains
+// more lives if he wins but it is more dangerous because 
+// he can lose lives AND coins if he loses.
 function fightPiranha()
 {
     // Piranha Plant sound
     var vine = document.getElementById("vine");
     vine.play();
+    
+     // Piranha plant strength
+    var piranhaStrength = Math.ceil(Math.random() * gameVariables.marioStrength * 2);
+    // Piranha plant coins it has
+    var piranhaCoins = Math.round(piranhaStrength / 2);
+    
+    // Find out if piranha plant is stronger than Mario
+    if(piranhaStrength > gameVariables.marioStrength)
+    {
+        // Piranha Plant takes some of Mario's lives AND coins
+        var livesLost = Math.round((piranhaStrength / 2));
+        gameVariables.lives -= livesLost;
+        var coinsLost = Math.round(piranhaCoins / 2);
+        gameVariables.coins -= coinsLost;
+        
+        // Update the gameMessage
+        gameVariables.gameMessage
+        = "You fight and LOSE " + livesLost + " lives and " + coinsLost + " coins." 
+        + " Mario's Strength: " + gameVariables.marioStrength
+        + " Piranha plant's Strength: " + piranhaStrength;
+    }
+    else
+    {
+        // Mario wins a few lives and coins
+        gameVariables.coins += piranhaCoins;
+        gameVariables.lives += 5;
+        
+        // Update the gameMessage
+        gameVariables.gameMessage
+        = "You fight and WIN " + piranhaCoins + " coins and 5 lives."
+        + " Mario's Strength: " + gameVariables.marioStrength
+        + " Piranha plant's Strength: " + piranhaStrength;
+    }
 }
 
 // What happens when Mario encounters a goomba cell
+// Gain lives and coins if Mario wins, loses lives if Mario loses
 function fightGoomba()
 {
     // Goomba attack sound
     var goomba = document.getElementById("goomba");
     goomba.play();
+    
+    // Goomba strength
+    var goombaStrength = Math.ceil(Math.random() * gameVariables.marioStrength * 2);
+    
+    // Find out if goomba is stronger than Mario
+    if(goombaStrength > gameVariables.marioStrength)
+    {
+        // Goomba takes some of Mario's lives
+        var livesLost = Math.round((goombaStrength / 2));
+        gameVariables.lives -= livesLost;
+        
+        // Update the gameMessage
+        gameVariables.gameMessage
+        = "You fight and LOSE " + livesLost + " lives."
+        + " Mario's Strength: " + gameVariables.marioStrength
+        + " Goomba's Strength: " + goombaStrength;
+    }
+    else
+    {
+        // Mario wins a few lives and coins
+        var goombaCoins = Math.round(goombaStrength / 2);
+        gameVariables.coins += goombaCoins;
+        gameVariables.lives += 3;
+        
+        // Update the gameMessage
+        gameVariables.gameMessage
+        = "You fight and WIN " + goombaCoins + " coins and 3 lives."
+        + " Mario's Strength: " + gameVariables.marioStrength
+        + " Goomba's Strength: " + goombaStrength;
+    }
 }
 
-// What happens when Mario dies
+// What happens when Mario dies or reaches Peach
 function endGame()
 {
+    // Mario reaches Peach
+    if(map.mapSpots[marioLocation.marioRow][marioLocation.marioColumn] === map.peach)
+    {
+        var youWin = document.getElementById("youWin");
+        youWin.play();
+            
+        // Show end screen when Mario has reached Peach
+        var end = document.getElementById("endScreen");
+        end.style.display = "block";
+    }
+    else // Mario dies
+    {
+        // Don't allow piranha sound to play (if that is how Mario dies)
+        var vine = document.getElementById("vine");
+        vine.pause();
+        
+        // Don't allow goomba sound to play (if that is how Mario dies)
+        var goomba = document.getElementById("goomba");
+        goomba.pause();
+        
+        // Play "game over" music
+        var marioDies = document.getElementById("marioDies");
+        marioDies.play();
+        
+        // Display gameMessage is Mario ran out of coins or lives
+        if(gameVariables.coins <= 0)
+        {
+            gameVariables.gameMessage += " You've run out of coins!";
+        }
+        else
+        {
+            gameVariables.gameMessage += " You have no lives left!";
+        }
+        gameVariables.gameMessage += " GAME OVER!";
+    }
     
+    // Remove the keyboard listener to end the game
+    window.removeEventListener("keydown", keydownHandler, false);
 }
     
 function render()

@@ -16,7 +16,7 @@ window.addEventListener("keydown", keydownHandler, false);
 // The game map of immobile objects
 // Uses "const" keyword to make the object literal a constant variable,
 // the map of the objects that do not move does not change (Ecmascript 6)
-const map = {
+var map = {
     mapSpots: [
     [2, 0, 0, 0, 1, 0, 0, 5],
     [0, 3, 0, 0, 0, 0, 4, 0],
@@ -45,7 +45,7 @@ const map = {
 // The game map of mobile objects
 // Uses "let" keyword to allow the object literal to change
 // due to Mario and Bowser moving around the board (Ecmascript 6)
-let gameObjects = {
+var gameObjects = {
     objectSpots: [
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
@@ -57,13 +57,7 @@ let gameObjects = {
     [6, 0, 0, 0, 0, 0, 0, 0]
     ],
     mario : 6,
-    bowser : 7,
-    get rows () {
-        return this.objectSpots.length;
-    },
-    get columns () {
-        return this.objectSpots[0].length;
-    }
+    bowser : 7
 };
 
 // Size of each cell
@@ -82,7 +76,7 @@ var gameVariables = {
     }
 };
 
-// Directions to go in the game
+// Directions for Mario to go in the game
 var direction = {
     up : 38,
     down : 40,
@@ -90,18 +84,25 @@ var direction = {
     left : 37
 }
 
+// Bowser's location, not initialized to anything
+var bowserLocation = {};
 // Mario's location, not initialized to anything
 var marioLocation = {};
 
-// Loop to figure out where Mario is in gameObjects array
-for(var row = 0; row < gameObjects.rows; row++)
+// Loop to figure out where Mario and Bowser are in gameObjects array
+for(var row = 0; row < map.rows; row++)
 {
-    for(var column = 0; column < gameObjects.columns; column++)
+    for(var column = 0; column < map.columns; column++)
     {
         if(gameObjects.objectSpots[row][column] === gameObjects.mario)
         {
             marioLocation.marioRow = row;
             marioLocation.marioColumn = column;
+        }
+        if(gameObjects.objectSpots[row][column] === gameObjects.bowser)
+        {
+            bowserLocation.bowserRow = row;
+            bowserLocation.bowserColumn = column;
         }
     }
 }
@@ -136,6 +137,7 @@ function keydownHandler(event)
                 gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] = gameObjects.mario;
             }
             break;
+            
         case direction.left:
             if(marioLocation.marioColumn > 0)
             {
@@ -159,7 +161,7 @@ function keydownHandler(event)
     switch(map.mapSpots[marioLocation.marioRow][marioLocation.marioColumn])
     {            
         case map.blank:
-            gameVariables.gameMessage = `You run to save the princess!`;
+            gameVariables.gameMessage = "You run to save the princess!";
             break;
             
         case map.coin:
@@ -183,6 +185,15 @@ function keydownHandler(event)
             break;
     }
     
+    // Move Bowser
+    moveBowser();
+        
+    // Find out if Mario is touching Bowser
+    if(gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] === gameObjects.bowser)
+    {
+        endGame();
+    }
+    
     // Subtract a life each turn
     gameVariables.lives--;
     
@@ -194,6 +205,102 @@ function keydownHandler(event)
 
     // Render the game    
     render();   
+}
+
+function moveBowser()
+{
+    // Directions Bowser can move
+    var bowserDirections = {
+        up : 1,
+        down: 2,
+        left: 3,
+        right: 4
+    };
+    
+    // Stores valid directions that Bowser can move in
+    var validDirections = [];
+    
+    // The final direction that Bowser will move in
+    var direction = undefined;
+    
+    // Find out what things are in the cells around Bowser.
+    // If it is a blank, push the corresponding direction into the array
+    if(bowserLocation.bowserRow > 0)
+    {
+        var thingAbove = map.mapSpots[bowserLocation.bowserRow - 1][bowserLocation.bowserColumn];    
+        if(thingAbove === map.blank)
+        {
+            validDirections.push(bowserDirections.up); 
+        }
+    }
+    
+    if(bowserLocation.bowserRow < map.rows - 1)
+    {
+        var thingBelow = map.mapSpots[bowserLocation.bowserRow + 1][bowserLocation.bowserColumn];
+        if(thingBelow === map.blank)
+        {
+            validDirections.push(bowserDirections.down);
+        }
+    }
+    
+    if(bowserLocation.bowserColumn > 0)
+    {
+        var thingToTheLeft = map.mapSpots[bowserLocation.bowserRow][bowserLocation.bowserColumn - 1];
+        if (thingToTheLeft === map.blank)
+        {
+            validDirections.push(bowserDirections.left);
+        }
+    }
+    
+    if(bowserLocation.bowserColumn < map.columns - 1)
+    {
+        var thingToTheRight = map.mapSpots[bowserLocation.bowserRow][bowserLocation.bowserColumn + 1];
+        if(thingToTheRight === map.blank)
+        {
+            validDirections.push(bowserDirections.right); 
+        }
+    }
+    
+    // Array now has 4 valid directions that contain cells that Bowser can go onto (blank cells)
+    // If a valid direction is found, randomly choose one of the possible directions 
+    // and assign it to the direction variable.
+    
+    if(validDirections.length !== 0)
+    {
+        var randomNumber = Math.floor(Math.random() * validDirections.length);
+        direction = validDirections[randomNumber];
+    }
+    
+    // Move Bowser in the chosen random direction
+    switch(direction)
+    {
+        case bowserDirections.up:
+            // Clear Bowsers current cell
+            gameObjects.objectSpots[bowserLocation.bowserRow][bowserLocation.bowserColumn] = 0;
+            //Subtract 1 from Bowser's row
+            bowserLocation.bowserRow--;
+            
+            // Apply Bowser's new updated position to the array
+            gameObjects.objectSpots[bowserLocation.bowserRow][bowserLocation.bowserColumn] = gameObjects.bowser;
+            break;
+        
+        case bowserDirections.down:
+            gameObjects.objectSpots[bowserLocation.bowserRow][bowserLocation.bowserColumn] = 0;
+            bowserLocation.bowserRow++;
+            gameObjects.objectSpots[bowserLocation.bowserRow][bowserLocation.bowserColumn] = gameObjects.bowser;
+            break;
+            
+        case bowserDirections.left:
+            gameObjects.objectSpots[bowserLocation.bowserRow][bowserLocation.bowserColumn] = 0;
+            bowserLocation.bowserColumn--;
+            gameObjects.objectSpots[bowserLocation.bowserRow][bowserLocation.bowserColumn] = gameObjects.bowser;
+            break;
+            
+        case bowserDirections.right:
+            gameObjects.objectSpots[bowserLocation.bowserRow][bowserLocation.bowserColumn] = 0;
+            bowserLocation.bowserColumn++;
+            gameObjects.objectSpots[bowserLocation.bowserRow][bowserLocation.bowserColumn] = gameObjects.bowser;
+    }
 }
 
 // What happens when Mario encounters a coin cell
@@ -259,8 +366,8 @@ function fightPiranha()
         // Update the gameMessage
         gameVariables.gameMessage
         = "You fight and LOSE " + livesLost + " lives and " + coinsLost + " coins." 
-        + " Mario's Strength: " + gameVariables.marioStrength
-        + " Piranha plant's Strength: " + piranhaStrength;
+        + " <br>Mario's Strength: " + gameVariables.marioStrength
+        + " <br>Piranha plant's Strength: " + piranhaStrength;
     }
     else
     {
@@ -271,8 +378,8 @@ function fightPiranha()
         // Update the gameMessage
         gameVariables.gameMessage
         = "You fight and WIN " + piranhaCoins + " coins and 5 lives."
-        + " Mario's Strength: " + gameVariables.marioStrength
-        + " Piranha plant's Strength: " + piranhaStrength;
+        + " <br>Mario's Strength: " + gameVariables.marioStrength
+        + " <br>Piranha plant's Strength: " + piranhaStrength;
     }
 }
 
@@ -297,8 +404,8 @@ function fightGoomba()
         // Update the gameMessage
         gameVariables.gameMessage
         = "You fight and LOSE " + livesLost + " lives."
-        + " Mario's Strength: " + gameVariables.marioStrength
-        + " Goomba's Strength: " + goombaStrength;
+        + " <br>Mario's Strength: " + gameVariables.marioStrength
+        + " <br>Goomba's Strength: " + goombaStrength;
     }
     else
     {
@@ -310,12 +417,12 @@ function fightGoomba()
         // Update the gameMessage
         gameVariables.gameMessage
         = "You fight and WIN " + goombaCoins + " coins and 3 lives."
-        + " Mario's Strength: " + gameVariables.marioStrength
-        + " Goomba's Strength: " + goombaStrength;
+        + " <br>Mario's Strength: " + gameVariables.marioStrength
+        + " <br>Goomba's Strength: " + goombaStrength;
     }
 }
 
-// What happens when Mario dies or reaches Peach
+// What happens when Mario dies, runs out of gold or lives, or reaches Peach
 function endGame()
 {
     // Mario reaches Peach
@@ -328,13 +435,18 @@ function endGame()
         var end = document.getElementById("endScreen");
         end.style.display = "block";
     }
-    else // Mario dies
+    // Mario hits Bowser
+    else if(gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] === gameObjects.bowser)
     {
-        // Don't allow piranha sound to play (if that is how Mario dies)
+        gameVariables.gameMessage = "Bowser got you! GAME OVER!";
+    }
+    else // Mario runs out of coins or gold
+    {
+        // Mute piranha sound (if that is how Mario dies)
         var vine = document.getElementById("vine");
         vine.pause();
         
-        // Don't allow goomba sound to play (if that is how Mario dies)
+        // Mute goomba sound (if that is how Mario dies)
         var goomba = document.getElementById("goomba");
         goomba.pause();
         
@@ -345,11 +457,11 @@ function endGame()
         // Display gameMessage is Mario ran out of coins or lives
         if(gameVariables.coins <= 0)
         {
-            gameVariables.gameMessage += " You've run out of coins!";
+            gameVariables.gameMessage += "<br> You've run out of coins!";
         }
         else
         {
-            gameVariables.gameMessage += " You have no lives left!";
+            gameVariables.gameMessage += "<br> You have no lives left!";
         }
         gameVariables.gameMessage += " GAME OVER!";
     }

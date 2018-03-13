@@ -1,10 +1,12 @@
 // Hide start screen when start button is clicked
-function hide() {
-    var display = document.getElementById("startScreen");
-    display.style.display = "none";
-    var hereWeGo = document.getElementById("hereWeGo");
-    hereWeGo.play();
-}
+// jQuery hide() method
+$(document).ready(function(){
+    $("#start").click(function(){
+        $("#startScreen").hide();
+        var hereWeGo = document.getElementById("hereWeGo");
+        hereWeGo.play();
+    });    
+});
  
 // Reference to the stage and output
 var stage = document.querySelector("#stage");

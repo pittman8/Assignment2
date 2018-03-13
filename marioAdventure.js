@@ -18,7 +18,7 @@ window.addEventListener("keydown", keydownHandler, false);
 // The game map of immobile objects
 // Uses "const" keyword to make the object literal a constant variable,
 // the map of the objects that do not move does not change (Ecmascript 6)
-var map = {
+const map = {
     mapSpots: [
     [2, 0, 0, 0, 1, 0, 0, 5],
     [0, 3, 0, 0, 0, 0, 4, 0],
@@ -47,7 +47,7 @@ var map = {
 // The game map of mobile objects
 // Uses "let" keyword to allow the object literal to change
 // due to Mario and Bowser moving around the board (Ecmascript 6)
-var gameObjects = {
+let gameObjects = {
     objectSpots: [
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
@@ -67,29 +67,10 @@ var cellSize = {
     size: 75
 }
 
-// Game variables
-var gameVariables = {
-    lives : 15,
-    coins : 10,
-    gameMessage : "Use the arrow keys to move around the board",
-    // Calculate Mario's strength based on his lives and coins
-    get marioStrength () { 
-        return Math.ceil((this.lives + this.coins) / 2);
-    }
-};
-
-// Directions for Mario to go in the game
-var direction = {
-    up : 38,
-    down : 40,
-    right : 39,
-    left : 37
-}
-
-// Bowser's location, not initialized to anything
-var bowserLocation = {};
 // Mario's location, not initialized to anything
 var marioLocation = {};
+// Bowser's location, not initialized to anything
+var bowserLocation = {};
 
 // Loop to figure out where Mario and Bowser are in gameObjects array
 for(var row = 0; row < map.rows; row++)
@@ -107,6 +88,24 @@ for(var row = 0; row < map.rows; row++)
             bowserLocation.bowserColumn = column;
         }
     }
+}
+// Game variables
+var gameVariables = {
+    lives : 15,
+    coins : 10,
+    gameMessage : "Use the arrow keys to move around the board",
+    // Calculate Mario's strength based on his lives and coins
+    get marioStrength () { 
+        return Math.ceil((this.lives + this.coins) / 2);
+    }
+};
+
+// Directions for Mario to go in the game
+var direction = {
+    up : 38,
+    down : 40,
+    right : 39,
+    left : 37
 }
 
 render();
@@ -190,12 +189,6 @@ function keydownHandler(event)
     // Move Bowser
     moveBowser();
         
-    // Find out if Mario is touching Bowser
-    if(gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] === gameObjects.bowser)
-    {
-        endGame();
-    }
-    
     // Subtract a life each turn
     gameVariables.lives--;
     
@@ -224,6 +217,12 @@ function moveBowser()
     
     // The final direction that Bowser will move in
     var direction = undefined;
+    
+    // Check if Mario and Bowser collided
+    if(bowserLocation.bowserRow === marioLocation.marioRow && bowserLocation.bowserColumn === marioLocation.marioColumn)
+    {
+        endGame();  
+    }
     
     // Find out what things are in the cells around Bowser.
     // If it is a blank, push the corresponding direction into the array
@@ -273,6 +272,7 @@ function moveBowser()
         direction = validDirections[randomNumber];
     }
     
+    
     // Move Bowser in the chosen random direction
     switch(direction)
     {
@@ -302,6 +302,7 @@ function moveBowser()
             gameObjects.objectSpots[bowserLocation.bowserRow][bowserLocation.bowserColumn] = 0;
             bowserLocation.bowserColumn++;
             gameObjects.objectSpots[bowserLocation.bowserRow][bowserLocation.bowserColumn] = gameObjects.bowser;
+            break;
     }
 }
 
@@ -434,16 +435,28 @@ function endGame()
         youWin.play();
             
         // Show end screen when Mario has reached Peach
-        var end = document.getElementById("endScreen");
+        var end = document.getElementById("endScreen1");
         end.style.display = "block";
     }
     // Mario hits Bowser
-    else if(gameObjects.objectSpots[marioLocation.marioRow][marioLocation.marioColumn] === gameObjects.bowser)
+    else if(bowserLocation.bowserRow === marioLocation.marioRow && bowserLocation.bowserColumn === marioLocation.marioColumn)
     {
-        gameVariables.gameMessage = "Bowser got you! GAME OVER!";
+        // Show the end screen
+        var end = document.getElementById("endScreen3");
+        end.style.display = "block";
+        // Pause this music in case Mario dies at same time Bowser gets him
+        var marioDies = document.getElementById("marioDies");
+        marioDies.pause();
+        // Show end screen
+        var bowserLaugh = document.getElementById("bowserLaugh");
+        bowserLaugh.play();
     }
     else // Mario runs out of coins or gold
     {
+        // Show the end screen
+        var end = document.getElementById("endScreen2");
+        end.style.display = "block";
+        
         // Mute piranha sound (if that is how Mario dies)
         var vine = document.getElementById("vine");
         vine.pause();
@@ -456,16 +469,6 @@ function endGame()
         var marioDies = document.getElementById("marioDies");
         marioDies.play();
         
-        // Display gameMessage is Mario ran out of coins or lives
-        if(gameVariables.coins <= 0)
-        {
-            gameVariables.gameMessage += "<br> You've run out of coins!";
-        }
-        else
-        {
-            gameVariables.gameMessage += "<br> You have no lives left!";
-        }
-        gameVariables.gameMessage += " GAME OVER!";
     }
     
     // Remove the keyboard listener to end the game

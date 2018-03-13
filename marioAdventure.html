@@ -25,7 +25,7 @@
         z-index: 1;
     }
     
-    #endScreen
+    #endScreen1, #endScreen2, #endScreen3
     {
         width: 750px;
         height: 950px;
@@ -105,6 +105,22 @@
         background-image: url('./images/mario_and_peach.png');
         margin-left: 270px;
     }
+    
+    #marioSad
+    {
+        width: 249px;
+        height: 290px;
+        background-image: url('./images/mario_sad.png');
+        margin-left: 240px;
+    }
+    
+    #bowserWins
+    {
+        width: 250px;
+        height: 273px;
+        background-image: url('./images/bowser_wins.png');
+        margin-left: 240px;
+    }
 
 </style>
 
@@ -124,12 +140,22 @@
 </div>
 
 <section id="game">
-    <div id ="endScreen">
+    <div id ="endScreen1">
         <br /><br /><br /><br /><br /><br />
         <h1>Congratulations! You Saved the Princess! </h1>
         <h2>You Win!!</h2>
         <div id= "marioAndPeach"></div>
         <p style="text-align: center; margin-left: 65px">Thanks for playing.</p>
+    </div>
+    <div id = "endScreen2">
+     <br /><br /><br /><br /><br /><br />
+        <h1>You ran out of lives<br />or coins.<br /><br />Game Over!</h1>
+        <div id = "marioSad"></div>
+    </div>
+    <div id = "endScreen3">
+    <br /><br /><br /><br /><br /><br />
+        <h1>Bowser got you!<br />Game Over!</h1>
+        <div id = "bowserWins"></div>
     </div>
     <h1>Super Mario Adventure!</h1>
     <div id="stage"></div>
@@ -163,6 +189,10 @@
 <audio id = "youWin">
     <source src="./audio/you_win.mp3" type="audio/mp3">
     <source src="./audio/you_win.ogg" type="audio/ogg">
+</audio>
+<audio id = "bowserLaugh">
+    <source src="./audio/bowser_laugh.mp3" type="audio/mp3">
+    <source src="./audio/bowser_laugh.ogg" type="audio/ogg">
 </audio>
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>

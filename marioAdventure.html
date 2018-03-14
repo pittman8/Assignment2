@@ -98,6 +98,16 @@
         cursor: pointer;
     }
     
+    #replay1, #replay2, #replay3
+    {
+        padding: 10px 10px;
+        font-size: 20px;
+        margin-left: 290px;
+        background-color: #f04545;
+        border: solid black;
+        cursor: pointer;
+    }
+    
     #marioAndPeach 
     {
         width: 225px;
@@ -146,16 +156,22 @@
         <h2>You Win!!</h2>
         <div id= "marioAndPeach"></div>
         <p style="text-align: center; margin-left: 65px">Thanks for playing.</p>
+        <br />
+        <button id = "replay1">Play Again</button>
     </div>
     <div id = "endScreen2">
      <br /><br /><br /><br /><br /><br />
         <h1>You ran out of lives<br />or coins.<br /><br />Game Over!</h1>
         <div id = "marioSad"></div>
+        <br />
+        <button id = "replay2">Play Again</button>
     </div>
     <div id = "endScreen3">
     <br /><br /><br /><br /><br /><br />
         <h1>Bowser got you!<br />Game Over!</h1>
         <div id = "bowserWins"></div>
+        <br />
+        <button id = "replay3">Play Again</button>
     </div>
     <h1>Super Mario Adventure!</h1>
     <div id="stage"></div>

@@ -100,7 +100,7 @@ function playGame()
     var cellSize = {
         size: 75
     }
-
+ 
     // Mario's location, not initialized to anything
     var marioLocation = {};
     // Bowser's location, not initialized to anything
